@@ -1,22 +1,51 @@
-#define _CRT_SECURE_NO_WARNINGS
+п»ї#define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
+#include <string.h>
+#include <locale.h>
 
-int main() {
-    FILE* fp = fopen("input.txt", "r"); // открыть файл на чтение
-    if (fp == NULL) { // обработка ошибок при открытии файла
+// РЎС‚СЂСѓРєС‚СѓСЂР° РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РёРЅС„РѕСЂРјР°С†РёРё Рѕ С‡РµР»РѕРІРµРєРµ
+struct Person {
+    char firstName[100];
+    char lastName[100];
+    int year;
+};
+
+// Р¤СѓРЅРєС†РёСЏ РґР»СЏ СЃСЂР°РІРЅРµРЅРёСЏ С„Р°РјРёР»РёР№
+int compareLastName(const void* a, const void* b) {
+    struct Person* personA = (struct Person*)a;
+    struct Person* personB = (struct Person*)b;
+    return strcmp(personA->lastName, personB->lastName);
+}
+
+int main(int argc, wchar_t* argv[]) {
+    setlocale(LC_ALL, "Rus");
+    system("chcp 1251"); // РЅР°СЃС‚СЂР°РёРІР°РµРј РєРѕРґРёСЂРѕРІРєСѓ РєРѕРЅСЃРѕР»Рё
+    wprintf(L"%s", L"Unicode -- English -- Р СѓСЃСЃРєРёР№ -- О•О»О»О·ОЅО№ОєО¬ -- EspaГ±ol.\n");
+
+    FILE* fp = fopen("input.txt", "r"); // РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р» РЅР° С‡С‚РµРЅРёРµ
+    if (fp == NULL) { // РѕР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РѕРє РїСЂРё РѕС‚РєСЂС‹С‚РёРё С„Р°Р№Р»Р°
         printf("Error: failed to open the file.\n");
         return 1;
-    } 
-    char buffer[100]; // буфер для чтения строки из файла
-    int year; // переменная для хранения года рождения
+    }
+    char buffer[1000]; // Р±СѓС„РµСЂ РґР»СЏ С‡С‚РµРЅРёСЏ СЃС‚СЂРѕРєРё РёР· С„Р°Р№Р»Р°
+    int year; // РїРµСЂРµРјРµРЅРЅР°СЏ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РіРѕРґР° СЂРѕР¶РґРµРЅРёСЏ
+    int numPeople = 0; // РєРѕР»РёС‡РµСЃС‚РІРѕ Р»СЋРґРµР№ РІ С„Р°Р№Р»Рµ
+    struct Person people[100]; // РјР°СЃСЃРёРІ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РёРЅС„РѕСЂРјР°С†РёРё Рѕ Р»СЋРґСЏС…
 
-    while (fgets(buffer, 100, fp) != NULL) { // читать строки из файла, пока не достигнут конец файла
-        sscanf(buffer, "%*s %*s %*s %d", &year); // считать год рождения из строки
-        if (year > 1980) { // проверить, родился ли человек после 1980 года
-            printf("%s", buffer); // вывести строку в консоль
+    while (fgets(buffer, 1000, fp) != NULL) { // С‡РёС‚Р°С‚СЊ СЃС‚СЂРѕРєРё РёР· С„Р°Р№Р»Р°, РїРѕРєР° РЅРµ РґРѕСЃС‚РёРіРЅСѓС‚ РєРѕРЅРµС† С„Р°Р№Р»Р°
+        sscanf(buffer, "%s %s %*s %d", people[numPeople].firstName, people[numPeople].lastName, &people[numPeople].year); // СЃС‡РёС‚Р°С‚СЊ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ С‡РµР»РѕРІРµРєРµ РёР· СЃС‚СЂРѕРєРё
+        if (people[numPeople].year > 1980) { // РїСЂРѕРІРµСЂРёС‚СЊ, СЂРѕРґРёР»СЃСЏ Р»Рё С‡РµР»РѕРІРµРє РїРѕСЃР»Рµ 1980 РіРѕРґР°
+            numPeople++; // СѓРІРµР»РёС‡РёС‚СЊ СЃС‡РµС‚С‡РёРє Р»СЋРґРµР№
         }
     }
 
-    fclose(fp); // закрыть файл
+    fclose(fp); // Р·Р°РєСЂС‹С‚СЊ С„Р°Р№Р»
+
+    qsort(people, numPeople, sizeof(struct Person), compareLastName); // СЃРѕСЂС‚РёСЂРѕРІРєР° РїРѕ С„Р°РјРёР»РёРё
+
+    for (int i = 0; i < numPeople; i++) {
+        printf("%s %s %d\n", people[i].firstName, people[i].lastName, people[i].year); // РІС‹РІРµСЃС‚Рё РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ С‡РµР»РѕРІРµРєРµ РІ РєРѕРЅСЃРѕР»СЊ
+    }
+
     return 0;
 }
