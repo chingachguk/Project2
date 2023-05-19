@@ -5,7 +5,6 @@
 
 int main() {
     system("chcp 1251");
-    int numbers[1000];
     int count = 0;
 
     printf("¬ведите числа через пробел (дл€ окончани€ ввода введите 0):\n");
